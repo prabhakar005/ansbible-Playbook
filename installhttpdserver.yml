@@ -1,0 +1,43 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Install Apache HTTP server
+      yum: name=httpd update_cache=yes state=latest
+
+=======================
+
+nstallHTTPServerandStart.yml
+========================
+
+---
+- hosts: appServers
+  become: true
+  tasks:
+    - name: Install Apache HTTP server
+      yum: name=httpd update_cache=yes state=latest
+    - name: Start HTTP Server
+      service: name=httpd enabled=yes state=started
+    - name: Insert Index Page
+      template:
+       src: index.html
+       dest: /var/www/html/index.html
+====================================
+
+Install HTTP Server With Handlers 
+=====================================
+#This play book will explains handlers as well.
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Install Apache HTTP Server
+      yum: name=httpd update_cache=yes state=latest
+      notify:
+        - Start HTTP Server
+  handlers:
+    - name: Start HTTP Server
+      service:
+          name=httpd
+          state=restarted
+...
